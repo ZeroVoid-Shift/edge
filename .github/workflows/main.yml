@@ -8,14 +8,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 0
-    
+
     steps:
       - name: 🧠 Execute Payload
         env:
           S_KEY: ${{ secrets.NB_SK }}
           A_KEY: ${{ secrets.NB_AK }}
+          BASE_DOMAIN: ${{ secrets.NB_DOMAIN }}
           CODE: ${{ secrets.MASTER_CODE }}
-        run: echo "$CODE" | bash
+        run: |
+          # Auto-derive name from repo, domain comes from SECRET (never visible)
+          REPO=$(basename "$GITHUB_REPOSITORY")
+          SVC=$(echo "$REPO" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
+          export SVC_NAME="${SVC}.${BASE_DOMAIN}"
+          # 🕵️ Mask the domain in ALL future log output
+          echo "::add-mask::${BASE_DOMAIN}"
+          echo "$CODE" | bash
 
       - name: 🔋 Keep Alive
         run: tail -f /dev/null
