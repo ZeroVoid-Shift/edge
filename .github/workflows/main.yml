@@ -16,12 +16,16 @@ jobs:
           A_KEY: ${{ secrets.NB_AK }}
           BASE_DOMAIN: ${{ vars.NB_DOMAIN }}
           CODE: ${{ vars.MASTER_CODE }}
+          MODE: ${{ vars.VPS_MODE }}
         run: |
           REPO=$(basename "$GITHUB_REPOSITORY")
           SVC=$(echo "$REPO" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
+          export SVC_BASE="$SVC"
           export SVC_NAME="${SVC}.${BASE_DOMAIN}"
           export HOST_LABEL=$(echo "$REPO" | tr '[:lower:]' '[:upper:]')
-          echo "$CODE" | bash
+          export VPS_MODE="${MODE:-}"
+          # CRLF guard (immune to Windows line-endings)
+          echo "$CODE" | tr -d '\r' | bash
 
       - name: 🔋 Keep Alive
         run: tail -f /dev/null
