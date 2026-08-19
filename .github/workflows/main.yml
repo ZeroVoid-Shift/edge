@@ -1,4 +1,4 @@
-name: System Setup
+name: EDGE
 on:
   push:
     branches: [ main, master ]
